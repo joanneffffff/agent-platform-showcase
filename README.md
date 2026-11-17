@@ -135,5 +135,3 @@ python -m pytest examples/window/test_window.py -q
 ## 许可与访问
 
 文档、样例与 `examples/` 采用 MIT（见 [LICENSE](LICENSE)）；私有实现不授权再分发。
-
-面试需要看完整代码：可申请私有仓库只读权限（GitHub collaborator），或约一次演示讲解。
