@@ -9,29 +9,26 @@
 
 ## 效果
 
-| 聊天：流式输出 + 三种格式 | 报告：表格 / 数据来源 / 数据缺口 |
-|---|---|
-| ![聊天](screenshots/chat.gif) | ![报告](screenshots/report.gif) |
+### 聊天：流式输出 + 运行记录
 
-| 系统页面：系统配置 · 定时任务 · 验证与评测 |
-|---|
-| ![系统页面](screenshots/site.gif) |
+![聊天](screenshots/chat.gif)
 
-三个 GIF 都是真实界面录制的（headless Edge 驱动，非拼接 mock）：
+逐字输入 → 发送 → 取数计划（数据集/窗口/预算/工具）→ **执行轨迹与中间审计日志**
+（RUN / MEMORY / CONTEXT / ROUTE / AGENT）→ 结论流式输出 → K 线 → 数据来源与缺口。
 
-- **聊天**：逐字输入 → 发送 → 取数计划（数据集/窗口/预算/工具）→ 工具执行 → 结论流式输出 →
-  K 线 → 数据来源、4 条缺口、HTML/PDF/DOCX 三种格式文件卡；
-- **报告**：整页滚动，KPI 条、K 线、分布图、成交额图、8 张表、底部"数据来源 / 数据缺口"；
-- **系统页面**：系统配置、定时任务、验证与评测（13 条历史 UAT：13/13 执行、11 通过、2 失败）。
+### 报告：表格 / 数据来源 / 数据缺口
 
-一次真实会话的产物（2026-11-16，A 股盘后报告，全部来自平台实际渲染）：
+![报告](screenshots/report.gif)
 
-- 模型只说"画什么"（`kind/subject/window`），平台取数、判型、画图；
-- K 线自动叠加 MA5/MA20/MA60；窗口不够长时自动跳过该周期，不报错；
-- **涨跌幅**红涨绿跌，其余数字（收盘价、股息率、换手率、最大回撤）保持黑色；
-- 结论、指标表、来源与缺口都由平台渲染，四种格式（HTML/PDF/DOCX/PPTX）共用同一份 plan。
+整页滚动：KPI 条、K 线、分布图、成交额图、8 张表，底部"数据来源 / 数据缺口"。
 
-演示只做 **GIF**（chat 12 s / report / site，均 ≤ 1 MB），不录视频。
+### 系统页面：配置 / 工作区 / 定时任务 / 验证
+
+![系统页面](screenshots/site.gif)
+
+LLM 提供商与网关、路由与语料、工作区、定时任务、验证与评测（13 条历史 UAT）。
+
+三个 GIF 都是真实界面录制的（headless Edge 驱动，非拼接 mock），不录视频。
 
 ## 能做什么
 
@@ -99,35 +96,14 @@
    `route.decided`、`tool.route`、`tool.call/result`、`chart.rendered`、`report.*`、
    `turn.terminal` —— 排查线上问题靠事实，不靠猜。
 
-## 实测数据
+## 技术栈
 
-前端同一条 `/api/chat` SSE 通道驱动：
-
-| 用例 | 轮数 | 耗时 | 产物 |
-|---|---:|---:|---|
-| 个股报告（分析 → 公式 → 导出） | 3 | **2:05** | 2 张表（7×20、3×10）、1 张 K 线、HTML 88KB、**DOCX 46.5KB（含图）** |
-| "只要文字，不要任何文件"边界 | 1 | 0:45 | **0 文件、0 图** |
-| 市场简报（意图 + 新闻 + 报告） | 1 | 2:01 | 5 张表、2 张图、HTML 157KB |
-| A 股盘后报告 | 1 | 1:48 | **8 张表**、4 张图、HTML 336KB |
-| 从已落库 spec 再导出 PDF | — | **0.9s** | 不重新取数，同一份 spec |
-
-其他：后端约 450 个模块；导入冒烟覆盖每个模块；645 个图表/报告测试确定性通过。
-
-## 三个工程故事
-
-**1. 同一个 bug 出现三次：spec 被重新打包成 dict。**
-报告页有图，导出的 Word 没图，publisher 只对 K 线报错。三个调用点各自 `dict(chart)`，
-丢掉了 `ohlcv`，画笔抛错又被 `except` 吞成空图。修法：边界传模型对象，dict 只在外部入口转换一次。
-
-**2. 一个决策两个 owner。**
-契约声明了 `chart_render`，工具面却按 plan 重建把它丢了——模型看不见就调不到；
-另一个实例是 web 工具被两个网关同时注入，模型看到两个前缀后猜错。
-修法：契约是唯一来源，工具面只做过滤；每个能力一个 owner，并用测试断言。
-
-**3. 静默失败把一个小 bug 拖成一下午。**
-导出接口报"没有可导出的报告"，实际是落库路径 `except: return None`：
-报告"生成成功"但 `report_specs` 零行。修法：边界返回 `ok=False + reason` 并记日志，
-每个缺口都进答复。
+| 前端 | 后端 | 交付与验证 |
+|---|---|---|
+| React 18 · TypeScript 5 · Vite 5 | Python 3.12 · FastAPI · Pydantic v2 | Docker Compose（PostgreSQL / Redis / Qdrant / MinIO） |
+| Zustand · React Router 6 | SQLAlchemy 2（async）· PostgreSQL · Redis · Qdrant · MinIO | GitHub Actions（基线门禁） |
+| ECharts 6 · react-markdown | matplotlib · reportlab · python-docx / openpyxl / python-pptx | Vitest · Playwright（UAT） |
+| Vitest · Playwright | LangChain + Agently · MCP servers（quant / platform-fc / interaction / skills）· SSE | 导入冒烟 + 645 个图表/报告测试 |
 
 ## 代码切片
 
