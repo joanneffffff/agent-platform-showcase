@@ -16,6 +16,10 @@
 逐字输入 → 发送 → 取数计划（数据集/窗口/预算/工具）→ **执行轨迹与中间审计日志**
 （RUN / MEMORY / CONTEXT / ROUTE / AGENT）→ 结论流式输出 → K 线 → 数据来源与缺口。
 
+运行记录（右侧检查器）：轮次、用户 Query、Model Request Context、Context/SHA-256、Token 预算。
+
+![运行记录](screenshots/run-records.png)
+
 ### 报告：表格 / 数据来源 / 数据缺口
 
 ![报告](screenshots/report.gif)
@@ -26,7 +30,8 @@
 
 ![系统页面](screenshots/site.gif)
 
-LLM 提供商与网关、路由与语料、工作区、定时任务、验证与评测（13 条历史 UAT）。
+LLM 提供商与网关、工具配置、Skill 技能包、MCP 协议服务、路由与语料、Prompt 管理、记忆设置、
+工作区、定时任务、验证与评测（13 条历史 UAT）。
 
 三个 GIF 都是真实界面录制的（headless Edge 驱动，非拼接 mock），不录视频。
 
