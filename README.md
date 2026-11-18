@@ -9,16 +9,20 @@
 
 ## 效果
 
-### 聊天：流式输出 + 运行记录
+### 聊天：流式输出 + 数据来源 / 缺口
 
 ![聊天](screenshots/chat.gif)
 
-逐字输入 → 发送 → 取数计划（数据集/窗口/预算/工具）→ **执行轨迹与中间审计日志**
-（RUN / MEMORY / CONTEXT / ROUTE / AGENT）→ 结论流式输出 → K 线 → 数据来源与缺口。
+新会话（工作区 demo）→ 输入问题 → 取数计划（数据集/窗口/预算/工具）→ 结论流式输出 →
+数据来源与缺口 → K 线（MA5/MA20 + 成交量）。
 
-运行记录（右侧检查器）：轮次、用户 Query、Model Request Context、Context/SHA-256、Token 预算。
+### 运行记录：轮次 / Model Request Context / 工具调用
 
-![运行记录](screenshots/run-records.png)
+![运行记录](screenshots/run-records.gif)
+
+右侧「运行记录」检查器：第 2 轮 / 第 1 轮、Model Request Context（context id、SHA-256、
+token 估算）、Provider 请求、Step 1–3 与每次工具调用（`mcp__platform_interaction__submit_report`、
+`mcp__platform_skills__context_read`、`mcp__platform_fc__chart_render`）及其参数 / 返回值。
 
 ### 报告：表格 / 数据来源 / 数据缺口
 
@@ -26,14 +30,14 @@
 
 整页滚动：KPI 条、K 线、分布图、成交额图、8 张表，底部"数据来源 / 数据缺口"。
 
-### 系统页面：配置 / 工作区 / 定时任务 / 验证
+### 系统配置中心：模型 / 工具 / Skill / MCP / 路由 / Prompt / 记忆 / 权限 / 知识库 / 存储
 
 ![系统页面](screenshots/site.gif)
 
-LLM 提供商与网关、工具配置、Skill 技能包、MCP 协议服务、路由与语料、Prompt 管理、记忆设置、
-工作区、定时任务、验证与评测（13 条历史 UAT）。
+平台配置中心全量页面：LLM 提供商与网关、工具配置、Skill 技能包、MCP 协议服务、路由与语料、
+Prompt 提示词集中管理、记忆与规则（Memory & Rules）、用户与权限、知识库管理、文件存储（MinIO）。
 
-三个 GIF 都是真实界面录制的（headless Edge 驱动，非拼接 mock），不录视频。
+三个 GIF 都是真实界面录制（1600×820 浏览器比例），不录视频。
 
 ## 能做什么
 
@@ -135,3 +139,5 @@ python -m pytest examples/window/test_window.py -q
 ## 许可与访问
 
 文档、样例与 `examples/` 采用 MIT（见 [LICENSE](LICENSE)）；私有实现不授权再分发。
+
+面试需要看完整代码：可申请私有仓库只读权限（GitHub collaborator），或约一次演示讲解。
